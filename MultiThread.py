@@ -4,6 +4,7 @@ from socket import *
 import datetime
 import threading
 
+
 class ClientThread(threading.Thread):
     def __init__(self, connect, address):
         threading.Thread.__init__(self)
@@ -13,41 +14,43 @@ class ClientThread(threading.Thread):
     def run(self):
         while True:
             try:
-                message = connectionSocket.recv(1024)
+                message = connectionSocket.recv(1024).decode()
                 # Fill in start #Fill in end
                 if not message:
                     break
-                print("message: \n", message)
+                print("message:\n", message)
                 filename = message.split()[1]
                 f = open(filename[1:])
-                outputdata = f.read()
-                print("outputdata:", outputdata)
+                outputData = f.read()
+                print("outputData:", outputData)
                 now = datetime.datetime.now()
                 # Fill in start #Fill in end
                 # Send one HTTP header line into socket
                 # Fill in start
 
-                first_header = "HTTP/1.1 200 OK"
-                # alive ={
-                # 	"timeout":10,
-                # 	"max":100,
-                # }
                 header_info = {
                     "Date": now.strftime("%Y-%m-%d %H:%M"),
-                    "Content-Length": len(outputdata),
+                    "Content-Length": len(outputData),
                     "Keep-Alive": "timeout=%d,max=%d" % (10, 100),
                     "Connection": "Keep-Alive",
                     "Content-Type": "text/html"
                 }
 
-                following_header = "\r\n".join("%s:%s" % (item, header_info[item]) for item in header_info)
-                print("following_header:", following_header)
-                connectionSocket.send(("%s\r\n%s\r\n\r\n" % (first_header, following_header)).encode())
+                following_header = "\n".join("%s:%s" % (item, header_info[item]) for item in header_info)
+                print("following_header:\n", following_header)
 
-                for i in range(0, len(outputdata)):
-                    connectionSocket.send(outputdata[i].encode())
+                connectionSocket.send('\nHTTP/1.1 200 OK\n\n'.encode())
+
+                for i in range(0, len(outputData)):
+                    connectionSocket.send(outputData[i].encode())
             except IOError:
-                connectionSocket.send("HTTP/1.1 404 Not Found\r\n\r\n".encode())
+                try:
+                    connectionSocket.send("HTTP/1.1 404 Not Found\n\n".encode())
+                    connectionSocket.send("HTTP/1.1 404 Not Found\n\n".encode())
+                except OSError:
+                    print("Client is off!")
+
+            # connectionSocket.close()
 
 
 if __name__ == '__main__':
@@ -70,4 +73,6 @@ if __name__ == '__main__':
         client_thread.start()
         threads.append(client_thread)
 
-    # main thread wait all threads finish then close the connection
+
+
+
