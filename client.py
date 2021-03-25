@@ -20,12 +20,12 @@ try:
         "Accept-Language": "en-us",
         "Host": host_port,
     }
-    http_header = "\r\n".join("%s:%s" % (item, header[item]) for item in header)
+    http_header = "\n".join("%s:%s" % (item, header[item]) for item in header)
     print(http_header)
-    client_socket.send(("%s\r\n\r\n" % http_header).encode())
-
+    client_socket.send(("%s" % http_header).encode())
 except IOError:
     sys.exit(1)
+
 final = ""
 response_message = client_socket.recv(1024)
 while response_message:
@@ -33,4 +33,4 @@ while response_message:
     response_message = client_socket.recv(1024)
 
 client_socket.close()
-print("final:", final)
+print("\nfinal: ", final)
