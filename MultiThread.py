@@ -1,5 +1,3 @@
-# this is the multi thread server for the lab1-optional exercises
-# import socket module
 from socket import *
 import datetime
 import threading
@@ -23,10 +21,8 @@ class ClientThread(threading.Thread):
                 f = open(filename[1:])
                 outputData = f.read()
                 print("outputData:", outputData)
+                f.close()
                 now = datetime.datetime.now()
-                # Fill in start #Fill in end
-                # Send one HTTP header line into socket
-                # Fill in start
 
                 header_info = {
                     "Date": now.strftime("%Y-%m-%d %H:%M"),
@@ -43,14 +39,13 @@ class ClientThread(threading.Thread):
 
                 for i in range(0, len(outputData)):
                     connectionSocket.send(outputData[i].encode())
+                connectionSocket.close()
             except IOError:
-                try:
-                    connectionSocket.send("HTTP/1.1 404 Not Found\n\n".encode())
-                    connectionSocket.send("HTTP/1.1 404 Not Found\n\n".encode())
-                except OSError:
-                    print("Client is off!")
-
-            # connectionSocket.close()
+                connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
+                connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
+                connectionSocket.close()
+            finally:
+                break
 
 
 if __name__ == '__main__':
@@ -71,8 +66,5 @@ if __name__ == '__main__':
         client_thread = ClientThread(connectionSocket, addr)
         client_thread.setDaemon(True)
         client_thread.start()
+        client_thread.join()
         threads.append(client_thread)
-
-
-
-
