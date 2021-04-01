@@ -66,5 +66,4 @@ if __name__ == '__main__':
         client_thread = ClientThread(connectionSocket, addr)
         client_thread.setDaemon(True)
         client_thread.start()
-        client_thread.join()
         threads.append(client_thread)
