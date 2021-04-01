@@ -33,6 +33,6 @@ while True:
         connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
         connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
 
-    connectionSocket.close()
-    serverSocket.close()
-    sys.exit()
+connectionSocket.close()
+serverSocket.close()
+sys.exit()
