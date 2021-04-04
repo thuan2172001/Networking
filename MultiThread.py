@@ -35,14 +35,13 @@ class ClientThread(threading.Thread):
                 following_header = "\n".join("%s:%s" % (item, header_info[item]) for item in header_info)
                 print("following_header:\n", following_header)
 
-                connectionSocket.send('\nHTTP/1.1 200 OK\n\n'.encode())
+                connectionSocket.send('HTTP/1.1 200 OK\n\n'.encode())
 
                 for i in range(0, len(outputData)):
                     connectionSocket.send(outputData[i].encode())
                 connectionSocket.close()
             except IOError:
-                connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
-                connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
+                connectionSocket.send('HTTP/1.1 404 Not Found\n\n'.encode())
                 connectionSocket.close()
             finally:
                 break

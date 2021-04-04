@@ -30,8 +30,8 @@ while True:
             connectionSocket.send(outputData[i].encode())
         connectionSocket.close()
     except IOError:
-        connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
-        connectionSocket.send('\nHTTP/1.1 404 Not Found\n\n'.encode())
+        connectionSocket.send('HTTP/1.1 404 Not Found\n\n'.encode())
+        connectionSocket.close()
 
 connectionSocket.close()
 serverSocket.close()
