@@ -11,9 +11,9 @@ rtt_receive_size = 0
 rtt_sum = 0.0
 
 try:
-    for i in range(1, 11):
+    for i in range(10):
         start = time.time()
-        message = 'Ping #' + str(i) + " " + time.ctime(start)
+        message = 'Ping #' + str(i + 1) + " " + time.ctime(start)
         try:
             sent = client_socket.sendto(message.encode(), server_addr)
             print("Sent: " + message)
@@ -29,7 +29,7 @@ try:
                 max_rtt = elapsed
             print("RTT: " + str(elapsed) + " seconds\n")
         except timeout:
-            print("#" + str(i) + " Requested Time out\n")
+            print("#" + str(i + 1) + " Requested Time out\n")
 
 finally:
     print("Min rtt is: " + str(min_rtt))
