@@ -3,7 +3,7 @@ from socket import *
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('', 11999))
-print("Started UDP server on port 12000")
+print("Started UDP server on port 11999")
 
 
 while True:
