@@ -49,7 +49,6 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         #Fill in start
         #Fetch the ICMP header from the IP packet
         type, code, checksum, id, seq = struct.unpack('bbHHh', recPacket[20:28])
-        print(struct.unpack('bbHHh', recPacket[20:28]))
         if type != 0:
             return 'expected type=0, but got {}'.format(type)
         if code != 0:
@@ -104,10 +103,9 @@ def sendOnePing(mySocket, destAddr, ID):
 def doOnePing(destAddr, timeout):
     icmp = socket.getprotobyname("icmp")
     #SOCK_RAW is a powerful socket type. For more details see: http://sock-raw.org/papers/sock_raw
-    #Fill in start
-    #Create Socket here
+
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
-    #Fill in end
+
     myID = os.getpid() & 0xFFFF #Return the current process i
     sendOnePing(mySocket, destAddr, myID)
     delay = receiveOnePing(mySocket, myID, timeout, destAddr)
@@ -134,12 +132,16 @@ def ping(host, timeout=1):
             time.sleep(1)
     except KeyboardInterrupt:
         if packet_transmitted_amount != 0:
-            print('--- {} ping statistics ---'.format(host))
-            print('{} packets transmitted, {} packets received, ''{:.1f}% packet loss'
+            print('\n--- PING TO {}: ---'.format(host))
+            print('=> {} packets transmitted, {} packets received, ''{:.1f} % packet loss'
                   .format(packet_transmitted_amount, packet_received_amount, 100.0 - packet_received_amount * 100.0 / packet_transmitted_amount))
             if packet_received_amount != 0:
-                print('round-trip min/avg/max {:.3f}/{:.3f}/{:.3f} ms'
-                      .format(rtt_min, rtt_sum / packet_received_amount, rtt_max))
+                print('  -> MIN RTT: {:.3f} ms'
+                      .format(rtt_min))
+                print('  -> MAX RTT: {:.3f} ms'
+                      .format(rtt_max))
+                print('  -> AVG RTT: {:.3f} ms'
+                      .format(rtt_sum / packet_received_amount))
 
 
 ping('google.com')
