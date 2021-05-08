@@ -50,7 +50,15 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         #Fetch the ICMP header from the IP packet
         type, code, checksum, id, seq = struct.unpack('bbHHh', recPacket[20:28])
         if type != 0:
-            return 'expected type=0, but got {}'.format(type)
+            if type == 3: #ICMP Error Message with IPv4 - Destination Unreachable (Detail in ENV.ICMP_LINK_MESSAGE)
+                if code == 0:
+                    return 'Destination Network Unreachable'
+                elif code == 1:
+                    return 'Destination Host Unreachable'
+                else:
+                    return 'Destination Unreachable'
+            else:
+                return 'expected type=0, but got {}'.format(type)
         if code != 0:
             return 'expected code=0, but got {}'.format(code)
         if ID != id:
@@ -68,7 +76,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         saddr = socket.inet_ntoa(ip_header[8])
         length = len(recPacket) - 20
 
-        return '{} bytes from {}: icmp_seq={} ttl={} time={:.3f} ms'.format(length, saddr, seq, ttl, rtt)
+        return '{} bytes from {}: icmp_seq={} ttl={} rtt={:.3f} ms'.format(length, saddr, seq, ttl, rtt)
         #Fill in end
 
         timeLeft = timeLeft - howLongInSelect

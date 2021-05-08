@@ -7,9 +7,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
+load_dotenv()
 
-EMAIL_USERNAME = 'validateabcd123@gmail.com'
-EMAIL_PASSWORD = 'superadmin@trinhvanthuan'
+EMAIL_USERNAME = os.getenv('EMAIL_USERNAME')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 DESTINATION_EMAIL = "thuan2172001@gmail.com"
 SUBJECT_EMAIL = "Test send mail"
 
