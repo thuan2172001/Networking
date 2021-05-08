@@ -32,7 +32,7 @@ def checksum(str):
     return answer
 
 def receiveOnePing(mySocket, ID, timeout, destAddr):
-    global rtt_min, rtt_max, rtt_sum, rtt_cnt
+    global rtt_min, rtt_max, rtt_sum, packet_received_amount
     timeLeft = timeout
     while 1:
         startedSelect = time.time()
@@ -44,9 +44,12 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         timeReceived = time.time()
         recPacket, addr = mySocket.recvfrom(1024)
 
+        #icmp header: (recPacket[20:28])
+
         #Fill in start
         #Fetch the ICMP header from the IP packet
         type, code, checksum, id, seq = struct.unpack('bbHHh', recPacket[20:28])
+        print(struct.unpack('bbHHh', recPacket[20:28]))
         if type != 0:
             return 'expected type=0, but got {}'.format(type)
         if code != 0:
@@ -56,7 +59,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         send_time,  = struct.unpack('d', recPacket[28:])
 
         rtt = (timeReceived - send_time) * 1000
-        rtt_cnt += 1
+        packet_received_amount += 1
         rtt_sum += rtt
         rtt_min = min(rtt_min, rtt)
         rtt_max = max(rtt_max, rtt)
@@ -113,12 +116,12 @@ def doOnePing(destAddr, timeout):
     return delay
 
 def ping(host, timeout=1):
-    global rtt_min, rtt_max, rtt_sum, rtt_cnt
+    global rtt_min, rtt_max, rtt_sum, packet_received_amount
     rtt_min = float('+inf')
     rtt_max = float('-inf')
     rtt_sum = 0
-    rtt_cnt = 0
-    cnt = 0
+    packet_received_amount = 0
+    packet_transmitted_amount = 0
     #timeout=1 means: If one second goes by without a reply from the server,
     #the client assumes that either the client's ping or the server's pong is lost
     dest = socket.gethostbyname(host)
@@ -126,17 +129,17 @@ def ping(host, timeout=1):
     #Send ping requests to a server separated by approximately one second
     try:
         while True:
-            cnt += 1
+            packet_transmitted_amount += 1
             print(doOnePing(dest, timeout))
             time.sleep(1)
     except KeyboardInterrupt:
-        if cnt != 0:
+        if packet_transmitted_amount != 0:
             print('--- {} ping statistics ---'.format(host))
             print('{} packets transmitted, {} packets received, ''{:.1f}% packet loss'
-                  .format(cnt, rtt_cnt, 100.0 - rtt_cnt * 100.0 / cnt))
-            if rtt_cnt != 0:
+                  .format(packet_transmitted_amount, packet_received_amount, 100.0 - packet_received_amount * 100.0 / packet_transmitted_amount))
+            if packet_received_amount != 0:
                 print('round-trip min/avg/max {:.3f}/{:.3f}/{:.3f} ms'
-                      .format(rtt_min, rtt_sum / rtt_cnt, rtt_max))
+                      .format(rtt_min, rtt_sum / packet_received_amount, rtt_max))
 
 
 ping('google.com')
