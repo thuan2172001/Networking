@@ -2,14 +2,18 @@ from getpass import getpass
 from socket import *
 from base64 import *
 import ssl
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 
-EMAIL_USERNAME = "validateabcd123@gmail.com"
-EMAIL_PASSWORD = "superadmin@"
+EMAIL_USERNAME = 'validateabcd123@gmail.com'
+EMAIL_PASSWORD = 'superadmin@trinhvanthuan'
 DESTINATION_EMAIL = "thuan2172001@gmail.com"
 SUBJECT_EMAIL = "Test send mail"
-EMAIL_BODY = "This is an email!"
 
-msg = '\r\nI love computer networks!'
+msg = '\r\nI love computer networks!\n'
 endmsg = '\r\n.\r\n'
 
 # Choose a mail server (e.g. Google mail server) and call it mailserver
@@ -84,6 +88,13 @@ print("rec7: " + recv7.decode())
 # Send message data.
 # Fill in start
 sslClientSocket.send("Subject: {}\n\n{}".format(SUBJECT_EMAIL, msg).encode())
+# Send an Image
+img_data = open('./assets/background.jpg', 'rb').read()
+msg = MIMEMultipart()
+image = MIMEImage(img_data, name=os.path.basename('./assets/background.jpg'))
+msg.attach(image)
+sslClientSocket.send(msg.as_string().encode('ascii'))
+# End send an Image
 # Fill in end
 
 # Message ends with a single period.
